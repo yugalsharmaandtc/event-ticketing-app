@@ -69,8 +69,14 @@ const Home = () => {
         setHasMore(newEvents.length > 0);
 
         // update autocomplete sources
-        setGenres(extractGenres(newEvents));
-        setCities(extractCities(newEvents));
+setGenres((prev) =>
+  prev.length ? prev : extractGenres(newEvents)
+);
+
+setCities((prev) =>
+  prev.length ? prev : extractCities(newEvents)
+);
+
       } catch (err) {
         console.error('Error fetching events', err);
       } finally {
@@ -81,19 +87,21 @@ const Home = () => {
   );
 
   // Initial load + restore filter from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('lastSearch');
+useEffect(() => {
+  const saved = localStorage.getItem("lastSearch");
 
-    if (saved) {
-      const { q: sq, city: sc, page: sp } = JSON.parse(saved);
-      setQ(sq);
-      setCity(sc);
-      setPage(sp);
-      fetchData(sp, false);
-    } else {
-      fetchData(0, false);
-    }
-  }, [fetchData]);
+  if (saved) {
+    const { q: sq, city: sc, page: sp } = JSON.parse(saved);
+    setQ(sq);
+    setCity(sc);
+    setPage(sp);
+    fetchData(sp, false);
+  } else {
+    fetchData(0, false);
+  }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
