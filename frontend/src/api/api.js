@@ -1,87 +1,98 @@
 // src/api/api.js
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+
+// Backend base URL
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 // Helper to get auth token
 const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-// Auth APIs
-export async function signup(data) {
-  const res = await fetch(`${API_BASE}/auth/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+// Generic fetch helper
+async function apiFetch(url, options = {}) {
+  const res = await fetch(url, options);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "API request failed");
+  }
+
+  return data;
 }
 
-export async function login(data) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+// ===================== AUTH APIs =====================
+
+export function signup(data) {
+  return apiFetch(`${API_BASE}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  return res.json();
 }
 
-// Event APIs
-export async function searchEvents({ q, city, page = 0 }) {
+export function login(data) {
+  return apiFetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+// ===================== EVENT APIs =====================
+
+export function searchEvents({ q, city, page = 0 }) {
   const params = new URLSearchParams();
-  if (q) params.append('q', q);
-  if (city) params.append('city', city);
-  params.append('page', page);
+  if (q) params.append("q", q);
+  if (city) params.append("city", city);
+  params.append("page", page);
 
-  const res = await fetch(`${API_BASE}/events?${params}`);
-  return res.json();
+  return apiFetch(`${API_BASE}/events?${params.toString()}`);
 }
 
-export async function getEventById(id) {
-  const res = await fetch(`${API_BASE}/events/${id}`);
-  return res.json();
+export function getEventById(id) {
+  return apiFetch(`${API_BASE}/events/${id}`);
 }
 
-// Booking APIs (Protected - require auth token)
-export async function createBooking(data) {
-  const res = await fetch(`${API_BASE}/bookings`, {
-    method: 'POST',
+// ===================== BOOKING APIs =====================
+
+export function createBooking(data) {
+  return apiFetch(`${API_BASE}/bookings`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(), // Add JWT token
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
     },
     body: JSON.stringify(data),
   });
-  return res.json();
 }
 
-export async function getBookingsByUser() {
-  const res = await fetch(`${API_BASE}/bookings`, {
+export function getBookingsByUser() {
+  return apiFetch(`${API_BASE}/bookings`, {
     headers: {
-      ...getAuthHeader(), // Add JWT token
+      ...getAuthHeader(),
     },
   });
-  return res.json();
 }
 
-export async function getBookingById(id) {
-  const res = await fetch(`${API_BASE}/bookings/${id}`, {
+export function getBookingById(id) {
+  return apiFetch(`${API_BASE}/bookings/${id}`, {
     headers: {
-      ...getAuthHeader(), // Add JWT token
+      ...getAuthHeader(),
     },
   });
-  return res.json();
 }
 
-// Payment API
-export async function payForBooking(data) {
-  const res = await fetch(`${API_BASE}/payments/pay`, {
-    method: 'POST',
+// ===================== PAYMENT APIs =====================
+
+export function payForBooking(data) {
+  return apiFetch(`${API_BASE}/payments/pay`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeader(), // Add JWT token if needed
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
     },
     body: JSON.stringify(data),
   });
-  return res.json();
 }
