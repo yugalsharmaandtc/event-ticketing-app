@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Typography,
   TextField,
@@ -10,16 +10,16 @@ import {
   Box,
   Autocomplete,
   Button,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import EventCard from '../components/EventCard';
-import { searchEvents } from '../api/api';
-import LoadingOverlay from '../components/LoadingOverlay';
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EventCard from "../components/EventCard";
+import { searchEvents } from "../api/api";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 const Home = () => {
-  const [q, setQ] = useState('rock');
-  const [city, setCity] = useState('');
+  const [q, setQ] = useState("rock");
+  const [city, setCity] = useState("");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [genres, setGenres] = useState([]);
@@ -61,24 +61,17 @@ const Home = () => {
         const newEvents = data.events || [];
 
         // append or replace
-        setEvents((prev) =>
-          append ? [...prev, ...newEvents] : newEvents
-        );
+        setEvents((prev) => (append ? [...prev, ...newEvents] : newEvents));
 
         // detect if more events exist
         setHasMore(newEvents.length > 0);
 
         // update autocomplete sources
-setGenres((prev) =>
-  prev.length ? prev : extractGenres(newEvents)
-);
+        setGenres((prev) => (prev.length ? prev : extractGenres(newEvents)));
 
-setCities((prev) =>
-  prev.length ? prev : extractCities(newEvents)
-);
-
+        setCities((prev) => (prev.length ? prev : extractCities(newEvents)));
       } catch (err) {
-        console.error('Error fetching events', err);
+        console.error("Error fetching events", err);
       } finally {
         setLoading(false);
       }
@@ -87,26 +80,25 @@ setCities((prev) =>
   );
 
   // Initial load + restore filter from localStorage
-useEffect(() => {
-  const saved = localStorage.getItem("lastSearch");
+  useEffect(() => {
+    const saved = localStorage.getItem("lastSearch");
 
-  if (saved) {
-    const { q: sq, city: sc, page: sp } = JSON.parse(saved);
-    setQ(sq);
-    setCity(sc);
-    setPage(sp);
-    fetchData(sp, false);
-  } else {
-    fetchData(0, false);
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
-
+    if (saved) {
+      const { q: sq, city: sc, page: sp } = JSON.parse(saved);
+      setQ(sq);
+      setCity(sc);
+      setPage(sp);
+      fetchData(sp, false);
+    } else {
+      fetchData(0, false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
     const newSearch = { q, city, page: 0 };
-    localStorage.setItem('lastSearch', JSON.stringify(newSearch));
+    localStorage.setItem("lastSearch", JSON.stringify(newSearch));
     setPage(0);
     fetchData(0, false);
   };
@@ -118,7 +110,7 @@ useEffect(() => {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: "100%" }}>
       <LoadingOverlay open={loading} />
 
       <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
@@ -132,7 +124,7 @@ useEffect(() => {
         onSubmit={handleSearch}
       >
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
+          direction={{ xs: "column", sm: "row" }}
           spacing={2}
           alignItems="flex-end"
         >
@@ -141,7 +133,7 @@ useEffect(() => {
             freeSolo
             options={genres}
             value={q}
-            onChange={(event, newValue) => setQ(newValue || '')}
+            onChange={(event, newValue) => setQ(newValue || "")}
             onInputChange={(event, newInputValue) => setQ(newInputValue)}
             fullWidth
             renderInput={(params) => (
@@ -165,7 +157,7 @@ useEffect(() => {
             freeSolo
             options={cities}
             value={city}
-            onChange={(event, newValue) => setCity(newValue || '')}
+            onChange={(event, newValue) => setCity(newValue || "")}
             onInputChange={(event, newInputValue) => setCity(newInputValue)}
             fullWidth
             renderInput={(params) => (
@@ -193,9 +185,9 @@ useEffect(() => {
             sx={{
               px: 4,
               py: 1.5,
-              backgroundColor: '#ff6b35',
-              '&:hover': {
-                backgroundColor: '#ff5722',
+              backgroundColor: "#ff6b35",
+              "&:hover": {
+                backgroundColor: "#ff5722",
               },
             }}
           >
@@ -209,10 +201,10 @@ useEffect(() => {
         container
         spacing={3}
         sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
           gap: 3,
-          width: '100%',
+          width: "100%",
         }}
       >
         {events.map((ev) => (
@@ -225,7 +217,7 @@ useEffect(() => {
       {/* If no results */}
       {!loading && events.length === 0 && (
         <Typography
-          sx={{ mt: 4, textAlign: 'center', color: 'text.secondary' }}
+          sx={{ mt: 4, textAlign: "center", color: "text.secondary" }}
         >
           No events found. Try a different search.
         </Typography>
@@ -233,7 +225,7 @@ useEffect(() => {
 
       {/* Load More */}
       {!loading && events.length > 0 && hasMore && (
-        <Box sx={{ mt: 4, textAlign: 'center' }}>
+        <Box sx={{ mt: 4, textAlign: "center" }}>
           <Button
             variant="outlined"
             onClick={handleLoadMore}
